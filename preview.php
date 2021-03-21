@@ -11,13 +11,6 @@ try {
     include_once('autoload.php');
     include_once('siteBuilder.php');
 
-    $input = [
-        'template_id' => 1,
-        'site_id' => 1,
-        'page_name' => 'Страница объекта',
-        'auth' => '8fea39d82cfaae83ed954e7f8e821a3c981c6e854ad2155fc2a86f7d01a8fa52',
-    ];
-
     if (empty($input) || !isset($input['auth']) || $input['auth'] != getenv('AUTH_KEY')) {
         print(json_encode('no auth'));
         exit;
@@ -50,7 +43,7 @@ try {
     $templateFiles = $constructor->getTemplateFiles(__DIR__ . '/' . $tmpl);
     $html = $constructor->build($templateFiles['site.settings.json'], $templateFiles, [], $pageName);
     file_put_contents(__DIR__ . $tmp . "/tmpHtml.php", $html);
-    $_SERVER['HTTP_HOST'] = $_SERVER['HTTP_HOST'] . '/siteBuilderBuilder/builder';
+//    $_SERVER['HTTP_HOST'] = $_SERVER['HTTP_HOST'] . '/siteBuilderBuilder/builder';
     $protocol = stripos($_SERVER['SERVER_PROTOCOL'], 'https') === 0 ? 'https://' : 'http://';
     $html = file_get_contents($protocol . $_SERVER['HTTP_HOST'] . '/' . $tmp . '/tmpHtml.php');
     echo json_encode(['message' => 'ok', 'html' => $html]);
