@@ -43,10 +43,12 @@ try {
         'SITE_ID',
         "API_PASS",
         'API_LOGIN',
+        'RABBIT_USER',
+        'RABBIT_HOST',
+        'AUTH_KEY'
     ]);
 } catch (Exception $e) {
-    die($e->getMessage());
+    throw new \Exception($e->getMessage());
 }
 //
-
 spl_autoload_register("clsAutoload");

@@ -2,6 +2,7 @@
     "require": {
         "vlucas/phpdotenv": "^5.1",
         "twig/twig": "^3.0",
-        "symfony/polyfill-iconv": "^1.18"
+        "symfony/polyfill-iconv": "^1.18",
+        "php-amqplib/php-amqplib": "3.0.0-rc1"
     }
 }

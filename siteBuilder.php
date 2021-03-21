@@ -70,7 +70,7 @@ class SiteBuilder
             }
             $this->twig = new \Twig\Environment($loader);
         } catch (Exception $e) {
-            die('ERROR: ' . $e->getMessage());
+            throw new \Exception('ERROR: ' . $e->getMessage());
         }
     }
 

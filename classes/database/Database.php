@@ -16,7 +16,7 @@ class Database
         try {
             $this->db = new PDO('sqlite:' . __DIR__ . '/' . $dbName);
         } catch (PDOException $e) {
-            die($e->getMessage());
+            throw new \Exception($e->getMessage());
         }
     }
 
