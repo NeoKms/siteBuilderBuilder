@@ -45,8 +45,8 @@ class SiteBuilder
         $this->apiHostName = getenv('API_HOST_NAME');
         if ($this->preview) {
             $this->headerIncludeArea = '<?php 
-       $dotenvDir = "'.$options['cmsPath'].'";
-       include_once(\'' . $options['cmsPath'] . 'autoload.php\'); 
+       $dotenvDir = "'.$options['cmsPath'].'../";
+       include_once(\'' . $options['cmsPath'] . '../autoload.php\'); 
        use classes\FrontController; 
        $fa = FrontController::getInstance(); 
        $mainProps = $fa->getMainProps();

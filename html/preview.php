@@ -8,15 +8,15 @@ header('Content-Type: application/json; charset=utf-8');
 $input = json_decode(file_get_contents('php://input'), true);
 
 try {
-    include_once('autoload.php');
-    include_once('siteBuilder.php');
+    include_once('../autoload.php');
+    include_once('../siteBuilder.php');
 
     if (empty($input) || !isset($input['auth']) || $input['auth'] != getenv('AUTH_KEY')) {
-        print(json_encode('no auth'));
+        print(json_encode('no auth1'));
         exit;
     }
     if (!isset($input['template_id']) || !isset($input['site_id']) || !isset($input['page_name'])) {
-        print(json_encode('no data'));
+        print(json_encode('no data1'));
         exit;
     }
 
@@ -25,7 +25,7 @@ try {
     $pageName = $input['page_name'];
     $tmpl = 'template' . time() . rand(0, 1000) . '/';
     $tmp = '/tmp' . time() . rand(0, 1000);
-    //$tmp = '/tmp';
+    $tmp = '/tmp';
     @mkdir(__DIR__ . '/' . $tmpl);
     @mkdir(__DIR__ . $tmp);
 
@@ -43,15 +43,17 @@ try {
     $templateFiles = $constructor->getTemplateFiles(__DIR__ . '/' . $tmpl);
     $html = $constructor->build($templateFiles['site.settings.json'], $templateFiles, [], $pageName);
     file_put_contents(__DIR__ . $tmp . "/tmpHtml.php", $html);
-//    $_SERVER['HTTP_HOST'] = $_SERVER['HTTP_HOST'] . '/siteBuilderBuilder/builder';
+        $_SERVER['HTTP_HOST'] = $_SERVER['HTTP_HOST'] . '/siteBuilderBuilder/builder/html/';
     $protocol = stripos($_SERVER['SERVER_PROTOCOL'], 'https') === 0 ? 'https://' : 'http://';
     $html = file_get_contents($protocol . $_SERVER['HTTP_HOST'] . '/' . $tmp . '/tmpHtml.php');
     echo json_encode(['message' => 'ok', 'html' => $html]);
 } catch (Exception $e) {
     echo json_encode(['message' => 'error', 'error' => $e->getMessage()]);
+} finally {
+    @delDir(__DIR__.'/'.$tmpl);
+//    @delDir(__DIR__.$tmp);
 }
-@delDir(__DIR__.'/'.$tmpl);
-@delDir(__DIR__.$tmp);
+
 
 function delDir($dir) {
     $files = array_diff(scandir($dir), ['.','..']);
