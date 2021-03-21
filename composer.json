@@ -1,0 +1,7 @@
+{
+    "require": {
+        "vlucas/phpdotenv": "^5.1",
+        "twig/twig": "^3.0",
+        "symfony/polyfill-iconv": "^1.18"
+    }
+}
