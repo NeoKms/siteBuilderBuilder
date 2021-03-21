@@ -135,11 +135,20 @@ class FrontController
         }
         $res = $res['data'][0];
         if (empty($res['photos'])) {
-            $res['photos'][] = "img/image2_web_ex.jpeg";
-            $res['photos'][] = "img/image1_web_ex.jpeg";
+            if (defined('IS_TEST_DATABASE') && IS_TEST_DATABASE) {
+                $res['photos'][] = getenv("API_HOST_NAME")."upload/images/image2_web_ex.jpeg";
+                $res['photos'][] = getenv("API_HOST_NAME")."upload/images/image1_web_ex.jpeg";
+            } else {
+                $res['photos'][] = "img/image2_web_ex.jpeg";
+                $res['photos'][] = "img/image1_web_ex.jpeg";
+            }
         }
         if (empty($res['schemes'])) {
-            $res['schemes'][] = "img/sheme_ex.png";
+            if (defined('IS_TEST_DATABASE') && IS_TEST_DATABASE) {
+                $res['schemes'][] = getenv("API_HOST_NAME")."upload/images/sheme_ex.png";
+            } else {
+                $res['schemes'][] = "img/sheme_ex.png";
+            }
         }
         return $res;
     }

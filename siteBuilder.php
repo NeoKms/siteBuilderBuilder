@@ -17,6 +17,7 @@ class SiteBuilder
     private $apiHostName = null;
     private $assetsUrl = null;
     private $siteData = null;
+    private $tmpl = null;
     
     public function __construct($options = [])
     {
@@ -25,17 +26,17 @@ class SiteBuilder
             if (isset($options['preview'])
                 && isset($options['dist'])
                 && isset($options['cmsPath'])
+                && isset($options['tmpl'])
                 && isset($options['asstesUrl'])) {
                 $this->preview = true;
                 $this->assetsUrl = $options['asstesUrl'];
+                $this->tmpl = $options['tmpl'];
             } else {
                 throw new \Exception('нет всех данных для генерации превью');
             }
         }
         if ($this->preview) {
             $this->dist = $options['dist'];
-            @mkdir($this->dist, 0777, true);
-
         } else {
             $this->dist = getenv('APP_PATH');
             @mkdir($this->dist . 'template/', 0777, true);
@@ -63,7 +64,7 @@ class SiteBuilder
         }
         try {
             if ($this->preview) {
-                $loader = new \Twig\Loader\FilesystemLoader($this->dist);
+                $loader = new \Twig\Loader\FilesystemLoader($this->tmpl);
             } else {
                 $loader = new \Twig\Loader\FilesystemLoader($this->dist . 'template/');
             }
@@ -391,7 +392,11 @@ class SiteBuilder
                         }
                         if ($this->preview) {
                             if (strpos($oneElem['data']['block'][$key]['img'],'http')===false) {
-                                $oneElem['data']['block'][$key]['img'] = $this->assetsUrl . str_replace('./', '', $oneElem['data']['block'][$key]['img']);
+                                if (strpos($oneElem['data']['block'][$key]['img'],'upload/images')!==false) {
+                                    $oneElem['data']['block'][$key]['img'] = $this->apiHostName . $oneElem['data']['block'][$key]['img'];
+                                } else {
+                                    $oneElem['data']['block'][$key]['img'] = $this->assetsUrl . str_replace('./', '', $oneElem['data']['block'][$key]['img']);
+                                }
                             }
                         } else {
                             $oneElem['data']['block'][$key]['img'] = 'img/' . $name;
@@ -427,6 +432,7 @@ class SiteBuilder
             }
             $res['elements'][str_replace(' ', '_', $oneElem['name'])] = $oneElem;
         }
+        $res['breadcrumbs'] = true;
         return $res;
     }
 
@@ -551,17 +557,18 @@ class SiteBuilder
 //        var_dump($arTemplates['files']);
 //        echo "</pre>";
 //        exit;
-        @mkdir($this->dist.'template/', 0777, true);
+
+        @mkdir($this->dist.($this->tmpl?$this->tmpl:'template/'), 0777, true);
         foreach ($res['download'] as $file) {
             $filename = $file['name'];
             $filepath = $file['path'];
             $src = $this->apiHostName . (str_replace(['%2F'],'/',rawurlencode($filepath)));
             $dst = $this->dist;
             if (stripos($filepath, 'upload/sites') !== false) {
-                $dst = $dst . 'template/' . $filename;
+                $dst = $dst . ($this->tmpl?$this->tmpl:'template/') . $filename;
             } else {
                 $path = explode('templates/' . $idTemplate, $filepath);
-                $dst = $dst . 'template' . $path[1];
+                $dst = $dst . ($this->tmpl?$this->tmpl:'template/') . $path[1];
                 $directoria = str_replace($filename,'',$dst);
                 @mkdir($directoria, 0777, true);
             }
