@@ -1,0 +1,108 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: site-builder-prewiev-ingress
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+    - host: preview.build.lan
+      http:
+        paths:
+          - backend:
+              serviceName: site-builder-prewiev
+              servicePort: 80
+            path: /
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: site-builder-prewiev
+  namespace: default
+  labels:
+    app: site-builder-prewiev
+spec:
+  ports:
+    - port: 80
+  clusterIP: None
+  selector:
+    app: site-builder-prewiev
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: site-builder-prewiev
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: site-builder-prewiev
+  replicas: 1
+  strategy:
+    type: "RollingUpdate"
+  template:
+    metadata:
+      labels:
+        app: site-builder-prewiev
+        commitHash: __VERSION__
+    spec:
+      containers:
+        - image: upachko/site_builder_builder:latest
+          imagePullPolicy: Always
+          name: site-builder-prewiev
+          env:
+            - name: PRODUCTION
+              valueFrom:
+                configMapKeyRef:
+                  name: server-type
+                  key: PRODUCTION
+            - name: COOKIE_DOMAIN
+              valueFrom:
+                configMapKeyRef:
+                  name: server-type
+                  key: COOKIE_DOMAIN
+            #props
+            - name: SITE_ID
+              value: "0"
+            - name: API_HOST_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: api-default
+                  key: URL
+            - name: APP_PATH
+              value: "/var/www/"
+            - name: WWW_PATH
+              value: "/var/www/html/"
+            - name: API_PASS
+              valueFrom:
+                configMapKeyRef:
+                  name: builder-default
+                  key: PASS
+            - name: API_LOGIN
+              valueFrom:
+                configMapKeyRef:
+                  name: builder-default
+                  key: LOGIN
+            - name: AUTH_KEY
+              valueFrom:
+                configMapKeyRef:
+                  name: builder-default
+                  key: AUTH_KEY
+            #rabbit
+            - name: RABBIT_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: builder-default
+                  key: RABBIT_USER
+            - name: RABBIT_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: rabbit-default
+                  key: HOST
+          ports:
+            - containerPort: 80
+              name: http
+          lifecycle:
+            postStart:
+              exec:
+                command: ["sh", "/var/www/env.sh"]
