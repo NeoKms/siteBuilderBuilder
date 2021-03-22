@@ -1,0 +1,17 @@
+stages:
+  - deploy
+
+deploy to production:
+  only:
+    refs:
+      - master
+    kubernetes: active
+  image: gcr.io/cloud-builders/kubectl:latest
+  stage: deploy
+  script:
+    - kubectl config set-cluster k8s --server="$KUBE_URL" --insecure-skip-tls-verify=true
+    - kubectl config set-credentials admin --token="$KUBE_TOKEN"
+    - kubectl config set-context default --cluster=k8s --user=admin
+    - kubectl config use-context default
+    - sed -i "s/__VERSION__/gitlab-$CI_COMMIT_SHORT_SHA/" k8s-preview.yaml
+    - kubectl apply -f k8s-preview.yaml
