@@ -77,7 +77,7 @@ function sendToRabbit($data) {
     $connection = new AMQPStreamConnection($rabbitHost, 5672, $rabbitUser[0], $rabbitUser[1]);
     $channel = $connection->channel();
     $channel->queue_declare('builder', false, true, false, false);
-    $msg = new AMQPMessage(json_encode($data), ['delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT]);
+    $msg = new AMQPMessage(json_encode($data,271), ['delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT]);
     $channel->basic_publish($msg, '', 'builder');
     $channel->close();
     $connection->close();
