@@ -1,6 +1,8 @@
 <?php
+
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
+
 ini_set('error_reporting', E_ALL);
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
@@ -39,45 +41,49 @@ try {
         throw new \Exception($res);
     }
     $templateFiles = $constructor->getTemplateFiles($path_tmpl);//здесь они забираются для билдера
-    $constructor->build($templateFiles['site.settings.json'], $templateFiles, $templateFiles['template.json']);//а это собирает
+    $constructor->build($templateFiles['site.settings.json'], $templateFiles,
+        $templateFiles['template.json']);//а это собирает
     $timeEnd = microtime(true) - $time;
     echo 'Сайт собран за ', round($timeEnd, 3), ' секунд';
     $databaseLock = __DIR__ . '/database.lock';
-    //    if (!file_exists($databaseLock)) {
-    //////////////////СБОРКА БАЗЫ////////////////////////////////////////////
-    $time = microtime(true);
-    classes\BackActions::getInstance()->initPublications($constructor->getSiteData());
-    //        file_put_contents($databaseLock, '');
-    $timeEnd = microtime(true) - $time;
-    echo "\nБаза собрана за ", round($timeEnd, 3), ' секунд';
-    //    }
+    if (!file_exists($databaseLock)) {
+        //////////////////СБОРКА БАЗЫ////////////////////////////////////////////
+        $time = microtime(true);
+        classes\BackActions::getInstance()->initPublications($constructor->getSiteData());
+        file_put_contents($databaseLock, '');
+        $timeEnd = microtime(true) - $time;
+        echo "\nБаза собрана за ", round($timeEnd, 3), ' секунд';
+    }
     sendToRabbit([
-        'site_id'=>getenv('SITE_ID'),
-        'status'=>'success'
+        'site_id' => getenv('SITE_ID'),
+        'status' => 'success'
     ]);
 } catch (Exception $e) {
     sendToRabbit([
-        'site_id'=>getenv('SITE_ID'),
-        'status'=>'error',
-        'error'=>$e->getMessage()
+        'site_id' => getenv('SITE_ID'),
+        'status' => 'error',
+        'error' => $e->getMessage()
     ]);
     die($e->getMessage());
 }
 //header("Location: ../app/index.php");//local
-function delDir($dir) {
-    $files = array_diff(scandir($dir), ['.','..']);
+function delDir($dir)
+{
+    $files = array_diff(scandir($dir), ['.', '..']);
     foreach ($files as $file) {
-        (is_dir($dir.'/'.$file)) ? delDir($dir.'/'.$file) : unlink($dir.'/'.$file);
+        (is_dir($dir . '/' . $file)) ? delDir($dir . '/' . $file) : unlink($dir . '/' . $file);
     }
     return rmdir($dir);
 }
-function sendToRabbit($data) {
+
+function sendToRabbit($data)
+{
     $rabbitHost = getenv('RABBIT_HOST');
     $rabbitUser = explode(':', getenv('RABBIT_USER'));
     $connection = new AMQPStreamConnection($rabbitHost, 5672, $rabbitUser[0], $rabbitUser[1]);
     $channel = $connection->channel();
     $channel->queue_declare('builder', false, true, false, false);
-    $msg = new AMQPMessage(json_encode($data,271), ['delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT]);
+    $msg = new AMQPMessage(json_encode($data, 271), ['delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT]);
     $channel->basic_publish($msg, '', 'builder');
     $channel->close();
     $connection->close();
