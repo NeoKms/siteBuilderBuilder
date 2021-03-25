@@ -57,6 +57,11 @@ spec:
                 configMapKeyRef:
                   name: server-type
                   key: PRODUCTION
+            - name: KUBE_IP
+              valueFrom:
+                configMapKeyRef:
+                  name: server-type
+                  key: KUBE_IP
             - name: COOKIE_DOMAIN
               valueFrom:
                 configMapKeyRef:
@@ -69,7 +74,7 @@ spec:
               valueFrom:
                 configMapKeyRef:
                   name: api-default
-                  key: HOST
+                  key: URL
             - name: APP_PATH
               value: "/var/www/"
             - name: WWW_PATH

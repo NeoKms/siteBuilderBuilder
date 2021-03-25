@@ -62,6 +62,11 @@ spec:
                 configMapKeyRef:
                   name: server-type
                   key: COOKIE_DOMAIN
+            - name: KUBE_IP
+              valueFrom:
+                configMapKeyRef:
+                  name: server-type
+                  key: KUBE_IP
             #props
             - name: SITE_ID
               value: "__SITE_ID__"
