@@ -9,4 +9,4 @@ echo "AUTH_KEY = $AUTH_KEY" >&3
 echo "RABBIT_USER = $RABBIT_USER" >&3
 echo "RABBIT_HOST = $RABBIT_HOST" >&3
 chmod -R 777 "$APP_PATH"/.env
-echo "$KUBE_IP api.build.lan" > /etc/hosts
+echo "$KUBE_IP api.build.lan" >> /etc/hosts
