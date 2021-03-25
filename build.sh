@@ -1,5 +1,5 @@
 sh env.sh
-rm -rf $APP_PATH
-mkdir $APP_PATH
+rm -rf $WWW_PATH
+mkdir $WWW_PATH
 php -f build.php
-chmod -R 777 $APP_PATH
+chmod -R 777 $WWW_PATH

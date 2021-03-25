@@ -19,5 +19,5 @@ RUN chmod 777 -R /var/www
 
 EXPOSE 80 22 443
 
-CMD ["service" "php7.4-fpm", "start"]
+CMD ["service", "php7.4-fpm", "start"]
 CMD ["/usr/bin/supervisord"]
