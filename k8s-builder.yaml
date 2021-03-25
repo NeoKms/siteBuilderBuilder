@@ -12,7 +12,7 @@ spec:
         paths:
           - backend:
               serviceName: site-builder-__SITE_ID__
-              servicePort: 3001
+              servicePort: 80
             path: /
 ---
 apiVersion: v1
