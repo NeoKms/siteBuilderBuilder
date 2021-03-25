@@ -69,7 +69,7 @@ spec:
               valueFrom:
                 configMapKeyRef:
                   name: api-default
-                  key: URL
+                  key: HOST
             - name: APP_PATH
               value: "/var/www/"
             - name: WWW_PATH
