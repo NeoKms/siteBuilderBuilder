@@ -66,7 +66,7 @@ class FrontController
                 $res[$ind]['floor_names'] = '-';
             }
             if (empty($oneRes['photos'])) {
-                $res[$ind]['photos'][0] = "http://public3.dev.lan/upload/examples/image1_web_ex.jpeg";
+                $res[$ind]['photos'][0] = rand(1,100)>50?"img/image1_web_ex.jpeg":"img/image2_web_ex.jpeg";
             }
         }
         return $res;
