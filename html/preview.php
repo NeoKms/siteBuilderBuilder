@@ -25,7 +25,7 @@ try {
     $pageName = $input['page_name'];
     $tmpl = 'template' . time() . rand(0, 1000) . '/';
     $tmp = '/tmp' . time() . rand(0, 1000);
-    $tmp = '/tmp';
+//    $tmp = '/tmp';
     @mkdir(__DIR__ . '/' . $tmpl);
     @mkdir(__DIR__ . $tmp);
 
@@ -45,13 +45,13 @@ try {
     file_put_contents(__DIR__ . $tmp . "/tmpHtml.php", $html);
         $_SERVER['HTTP_HOST'] = $_SERVER['HTTP_HOST'] . '/siteBuilderBuilder/builder/html/';
     $protocol = stripos($_SERVER['SERVER_PROTOCOL'], 'https') === 0 ? 'https://' : 'http://';
-    $html = file_get_contents($protocol . $_SERVER['HTTP_HOST'] . '/' . $tmp . '/tmpHtml.php');
+    $html = file_get_contents($protocol . explode('/',$_SERVER['HTTP_HOST'])[0] . $tmp . '/tmpHtml.php');
     echo json_encode(['message' => 'ok', 'html' => $html]);
 } catch (Exception $e) {
     echo json_encode(['message' => 'error', 'error' => $e->getMessage()]);
 } finally {
     @delDir(__DIR__.'/'.$tmpl);
-//    @delDir(__DIR__.$tmp);
+    @delDir(__DIR__.$tmp);
 }
 
 
