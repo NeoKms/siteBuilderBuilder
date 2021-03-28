@@ -66,7 +66,12 @@ class FrontController
                 $res[$ind]['floor_names'] = '-';
             }
             if (empty($oneRes['photos'])) {
-                $res[$ind]['photos'][0] = rand(1,100)>50?"img/image1_web_ex.jpeg":"img/image2_web_ex.jpeg";
+                if (defined('IS_TEST_DATABASE') && IS_TEST_DATABASE) {
+                    $res[$ind]['photos'][0] = rand(1,100)>50?getenv("API_HOST_NAME")."upload/images/image1_web_ex.jpeg":getenv("API_HOST_NAME")."upload/images/image2_web_ex.jpeg";
+                    $res[$ind]['photos'][0] = rand(1,100)>50?getenv("API_HOST_NAME")."upload/images/image1_web_ex.jpeg":getenv("API_HOST_NAME")."upload/images/image2_web_ex.jpeg";
+                } else {
+                    $res[$ind]['photos'][0] = rand(1,100)>50?"img/image1_web_ex.jpeg":"img/image2_web_ex.jpeg";
+                }
             }
         }
         return $res;
@@ -102,7 +107,13 @@ class FrontController
                 $res[$ind]['floor_names'] = '-';
             }
             if (empty($oneRes['photos'])) {
-                $res[$ind]['photos'][] = "img/image2_web_ex.jpeg";
+                if (defined('IS_TEST_DATABASE') && IS_TEST_DATABASE) {
+                    $res[$ind]['photos'][] = getenv("API_HOST_NAME")."upload/images/image2_web_ex.jpeg";
+                    $res[$ind]['photos'][] = getenv("API_HOST_NAME")."upload/images/image1_web_ex.jpeg";
+                } else {
+                    $res[$ind]['photos'][] = "img/image2_web_ex.jpeg";
+                }
+
             }
         }
         return $res;
