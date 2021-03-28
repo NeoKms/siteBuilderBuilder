@@ -3,7 +3,10 @@ ini_set('error_reporting', E_ALL);
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 ini_set('max_execution_time', '1200');
-
+header("Access-Control-Allow-Origin: {$_SERVER['HTTP_ORIGIN']}");
+header("Access-Control-Allow-Credentials: true");
+$headers = []; foreach (getallheaders() as $name=>$value) $headers[]=$name;
+header("Access-Control-Allow-Headers: ".implode(',',$headers));
 header('Content-Type: application/json; charset=utf-8');
 $input = json_decode(file_get_contents('php://input'), true);
 
