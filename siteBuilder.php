@@ -18,7 +18,7 @@ class SiteBuilder
     private $assetsUrl = null;
     private $siteData = null;
     private $tmpl = null;
-    
+
     public function __construct($options = [])
     {
         $this->preview = false;
@@ -540,7 +540,7 @@ class SiteBuilder
     public function copyTemplate($id)
     {
         $info = ["username" => getenv('API_LOGIN'), "password" => getenv('API_PASS')];
-        $res = $this->__curlQuery($info, $this->url."auth/login");
+        $res = $this->__curlQuery($info, $this->url."auth/login", true);
         if (!isset($res['message']) || $res['message']!=='ok') {
             throw new \Exception('no auth');
         }
@@ -588,28 +588,41 @@ class SiteBuilder
             return "Ошибка в этих файлах:" . print_r($error_file,true) . ".  Не удалось сохранить файлы";
         }
     }
-    private function __curlQuery($data, $url)
+    private function __curlQuery($data, $url, $auth = false)
     {
+        if ($auth) {
+            file_put_contents('myCookie','');
+        }
+        $cookie = file_get_contents('myCookie');
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-        curl_setopt($ch,CURLOPT_COOKIEJAR,'myCookie');
-        curl_setopt($ch,CURLOPT_COOKIEFILE ,'myCookie');
+        curl_setopt($ch, CURLOPT_COOKIE, $cookie);
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
         curl_setopt($ch, CURLOPT_USERAGENT, 'sitebuilder');
+        curl_setopt($ch, CURLOPT_HEADER, true);
         $out = curl_exec($ch);
+        $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+        $header = substr($out, 0, $header_size);
+        if ($auth) {
+            if (preg_match_all('/Set-Cookie:[\s]([^;]+)/', $header, $matches)) {
+                $cookies = $matches[1];
+            }
+            file_put_contents('myCookie', print_r($cookies[0], true));
+        }
+        $body = substr($out, $header_size);
         curl_close($ch);
-        return json_decode($out, true);
+        return json_decode($body, true);
     }
     private function __curlGet($url)
     {
+        $cookie = file_get_contents('myCookie');
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch,CURLOPT_COOKIEJAR,'myCookie');
-        curl_setopt($ch,CURLOPT_COOKIEFILE ,'myCookie');
+        curl_setopt($ch, CURLOPT_COOKIE, $cookie);
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
         curl_setopt($ch, CURLOPT_USERAGENT, 'sitebuilder');
         $out = curl_exec($ch);

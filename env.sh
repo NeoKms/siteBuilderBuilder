@@ -1,3 +1,11 @@
+cd $APP_PATH && git reset --hard && git pull
+if [ "$PRODUCTION" = "true" ] ; then
+ echo "its prod"
+else
+ echo "its dev"
+ git checkout develop
+fi
+git pull
 exec 3>"$APP_PATH"/.env
 echo "SITE_ID = $SITE_ID" >&3
 echo "API_HOST_NAME = $API_HOST_NAME" >&3
@@ -9,5 +17,6 @@ echo "AUTH_KEY = $AUTH_KEY" >&3
 echo "RABBIT_USER = $RABBIT_USER" >&3
 echo "RABBIT_HOST = $RABBIT_HOST" >&3
 chmod -R 777 "$APP_PATH"/.env
-echo "$KUBE_IP api.build.lan" >> /etc/hosts
-echo "$KUBE_IP preview.build.lan" >> /etc/hosts
+chmod -R 777 "$APP_PATH"classes/database/
+echo "$KUBE_IP $API_HOST_NAME" >> /etc/hosts
+echo "$KUBE_IP $PREVIEW_URL" >> /etc/hosts
