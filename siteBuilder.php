@@ -347,6 +347,8 @@ class SiteBuilder
             }
             $blockName = $oneBlock['id'] . '.tmpl';
             $oneBlock = $this->rebaseOpt($oneBlock);
+            $oneBlock['page'] = $pageOptions['name'];
+            $oneBlock['block'] = $oneBlock['id'];
             $blockHTML = $this->twig->render($pageOptions['name'] . '/' . $blockName, $oneBlock);
             //готовый блок. для тестов
 //             echo $blockHTML;
