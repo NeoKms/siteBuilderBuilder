@@ -31,7 +31,7 @@ class BackActions
     {
         /////////////////getData/////////////////////////
         $info = ["username" => getenv('API_LOGIN'), "password" => getenv('API_PASS')];
-        $res = $this->__curlQuery($info, $this->url."auth/login");
+        $res = $this->__curlQuery($info, $this->url."auth/login", true);
         if (!isset($res['message']) || $res['message']!=='ok') {
             throw new \Exception('no auth');
         }
@@ -96,20 +96,33 @@ class BackActions
         return $res['result'];
     }
     ///сделать курл запрос
-    private function __curlQuery($data, $url)
+    private function __curlQuery($data, $url, $auth = false)
     {
+        if ($auth) {
+            file_put_contents('myCookie','');
+        }
+        $cookie = file_get_contents('myCookie');
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-        curl_setopt($ch,CURLOPT_COOKIEJAR,'myCookie');
-        curl_setopt($ch,CURLOPT_COOKIEFILE ,'myCookie');
+        curl_setopt($ch, CURLOPT_COOKIE, $cookie);
         curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
         curl_setopt($ch, CURLOPT_USERAGENT, 'siteBuilder');
+        curl_setopt($ch, CURLOPT_HEADER, true);
         $out = curl_exec($ch);
+        $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+        $header = substr($out, 0, $header_size);
+        if ($auth) {
+            if (preg_match_all('/Set-Cookie:[\s]([^;]+)/', $header, $matches)) {
+                $cookies = $matches[1];
+            }
+            file_put_contents('myCookie', print_r($cookies[0], true));
+        }
+        $body = substr($out, $header_size);
         curl_close($ch);
-        return json_decode($out, true);
+        return json_decode($body, true);
     }
     ///красивый вывод
     private function dump($data)

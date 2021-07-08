@@ -42,7 +42,7 @@ try {
         'blockId' => -1,
     ]);
     $constructor->setPathTo(__DIR__ . $tmp);
-    $res = $constructor->copyTemplate($templateId);
+    $res = $constructor->copyTemplate($siteId);
     $templateFiles = $constructor->getTemplateFiles(__DIR__ . '/' . $tmpl);
     $html = $constructor->build($templateFiles['site.settings.json'], $templateFiles, [], $pageName);
     file_put_contents(__DIR__ . $tmp . "/tmpHtml.php", $html);

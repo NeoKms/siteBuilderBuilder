@@ -41,8 +41,7 @@ try {
         throw new \Exception($res);
     }
     $templateFiles = $constructor->getTemplateFiles($path_tmpl);//здесь они забираются для билдера
-    $constructor->build($templateFiles['site.settings.json'], $templateFiles,
-        $templateFiles['template.json']);//а это собирает
+    $constructor->build($templateFiles['site.settings.json'], $templateFiles, $templateFiles['template.json']);//а это собирает
     $timeEnd = microtime(true) - $time;
     echo 'Сайт собран за ', round($timeEnd, 3), ' секунд';
     $databaseLock = __DIR__ . '/database.lock';
@@ -50,7 +49,7 @@ try {
         //////////////////СБОРКА БАЗЫ////////////////////////////////////////////
         $time = microtime(true);
         classes\BackActions::getInstance()->initPublications($constructor->getSiteData());
-        file_put_contents($databaseLock, '');
+//        file_put_contents($databaseLock, '');
         $timeEnd = microtime(true) - $time;
         echo "\nБаза собрана за ", round($timeEnd, 3), ' секунд';
     }

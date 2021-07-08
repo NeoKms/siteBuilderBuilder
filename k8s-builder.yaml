@@ -105,6 +105,11 @@ spec:
                 configMapKeyRef:
                   name: rabbit-default
                   key: HOST
+            - name: PREVIEW_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: builder-default
+                  key: PREVIEW_URL
           ports:
             - containerPort: 80
               name: http

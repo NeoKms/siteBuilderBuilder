@@ -52,6 +52,11 @@ spec:
           imagePullPolicy: Always
           name: site-builder-prewiev
           env:
+            - name: PREVIEW_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: builder-default
+                  key: PREVIEW_URL
             - name: PRODUCTION
               valueFrom:
                 configMapKeyRef:
