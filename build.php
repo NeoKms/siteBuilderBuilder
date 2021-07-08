@@ -48,7 +48,7 @@ try {
     if (!file_exists($databaseLock)) {
         //////////////////СБОРКА БАЗЫ////////////////////////////////////////////
         $time = microtime(true);
-        classes\BackActions::getInstance()->initItems($constructor->getSiteData());
+        classes\BackActions::getInstance()->initPublications($constructor->getSiteData());
 //        file_put_contents($databaseLock, '');
         $timeEnd = microtime(true) - $time;
         echo "\nБаза собрана за ", round($timeEnd, 3), ' секунд';
