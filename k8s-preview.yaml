@@ -25,7 +25,6 @@ metadata:
 spec:
   ports:
     - port: 80
-  clusterIP: None
   selector:
     app: site-builder-prewiev
 ---
